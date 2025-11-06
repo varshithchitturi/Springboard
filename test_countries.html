@@ -1,0 +1,45 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Countries Test</title>
+    </head>
+    <body>
+        <h1>Countries Loading Test</h1>
+        <select id="testCountry">
+            <option value="">Loading...</option>
+        </select>
+        
+        <script>
+        console.log('Test page loaded');
+        
+        async function testLoadCountries() {
+            console.log('Testing countries loading...');
+            try {
+                const response = await fetch('/api/countries');
+                console.log('Response status:', response.status);
+                
+                const countries = await response.json();
+                console.log('Countries received:', countries);
+                
+                const select = document.getElementById('testCountry');
+                select.innerHTML = '<option value="">Select Country</option>';
+                
+                countries.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    select.appendChild(option);
+                });
+                
+                console.log('Countries added to select');
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', testLoadCountries);
+        </script>
+    </body>
+    </html>
+    

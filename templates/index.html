@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Forest Earthquake Predictor - AI-Powered Seismic Risk Assessment</title>
+    <meta name="description" content="Advanced Random Forest machine learning earthquake prediction system trained on real seismic data">
+    
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header animate__animated animate__fadeInDown">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-globe-americas"></i>
+                    <h1>Random Forest Earthquake Predictor</h1>
+                </div>
+                <p class="subtitle">AI-Powered Random Forest Models • 93.5% Accuracy • Trained on Real Data</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="prediction-container animate__animated animate__fadeInUp">
+                <div class="form-section">
+                    <h2><i class="fas fa-chart-line"></i> Earthquake Parameters</h2>
+                    <form id="predictionForm" class="prediction-form">
+                        <div class="form-grid">
+                            <!-- Basic Parameters -->
+                            <div class="form-group">
+                                <label for="magnitude">
+                                    <i class="fas fa-tachometer-alt"></i>
+                                    Magnitude (Richter Scale)
+                                </label>
+                                <input type="number" id="magnitude" name="magnitude" 
+                                       min="1" max="10" step="0.1" value="5.5" required>
+                                <small>Range: 1.0 - 10.0</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="depth">
+                                    <i class="fas fa-arrow-down"></i>
+                                    Depth (km)
+                                </label>
+                                <input type="number" id="depth" name="depth" 
+                                       min="0" max="700" step="1" value="10" required>
+                                <small>Range: 0 - 700 km</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="alert">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Alert Level
+                                </label>
+                                <select id="alert" name="alert">
+                                    <option value="none">None</option>
+                                    <option value="green">Green</option>
+                                    <option value="yellow">Yellow</option>
+                                    <option value="orange">Orange</option>
+                                    <option value="red">Red</option>
+                                </select>
+                            </div>
+
+                            <!-- Location Parameters -->
+                            <div class="form-group">
+                                <label for="country">
+                                    <i class="fas fa-flag"></i>
+                                    Country
+                                </label>
+                                <select id="country" name="country">
+                                    <option value="">Select Country</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="continent">
+                                    <i class="fas fa-globe"></i>
+                                    Continent
+                                </label>
+                                <select id="continent" name="continent">
+                                    <option value="">Select Continent</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="magType">
+                                    <i class="fas fa-cog"></i>
+                                    Magnitude Type
+                                </label>
+                                <select id="magType" name="magType">
+                                    <option value="mw">MW (Moment)</option>
+                                    <option value="ml">ML (Local)</option>
+                                    <option value="mb">MB (Body Wave)</option>
+                                    <option value="ms">MS (Surface Wave)</option>
+                                    <option value="md">MD (Duration)</option>
+                                </select>
+                            </div>
+
+                            <!-- Additional Parameters for Random Forest -->
+                            <div class="form-group">
+                                <label for="cdi">
+                                    <i class="fas fa-users"></i>
+                                    CDI (Community Impact)
+                                </label>
+                                <input type="number" id="cdi" name="cdi" 
+                                       min="0" max="10" step="1" value="5">
+                                <small>Range: 0 - 10</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="mmi">
+                                    <i class="fas fa-chart-bar"></i>
+                                    MMI (Intensity)
+                                </label>
+                                <input type="number" id="mmi" name="mmi" 
+                                       min="0" max="10" step="1" value="4">
+                                <small>Range: 0 - 10</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sig">
+                                    <i class="fas fa-exclamation"></i>
+                                    Significance
+                                </label>
+                                <input type="number" id="sig" name="sig" 
+                                       min="0" max="2000" step="10" value="500">
+                                <small>Range: 0 - 2000</small>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="predict-btn">
+                            <i class="fas fa-brain"></i>
+                            Predict with Random Forest
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results Section -->
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <h2><i class="fas fa-chart-bar"></i> Random Forest Prediction Results</h2>
+                    
+                    <div class="results-grid">
+                        <!-- High Impact Prediction -->
+                        <div class="result-card" id="highImpactCard">
+                            <div class="result-header">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <h3>High Impact Risk</h3>
+                            </div>
+                            <div class="result-content">
+                                <div class="probability-circle" id="highImpactCircle">
+                                    <span id="highImpactProb">0%</span>
+                                </div>
+                                <div class="risk-level" id="highImpactLevel">Low</div>
+                                <div class="prediction-text" id="highImpactText">
+                                    Low probability of high impact
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tsunami Risk Prediction -->
+                        <div class="result-card" id="tsunamiRiskCard">
+                            <div class="result-header">
+                                <i class="fas fa-water"></i>
+                                <h3>Tsunami Risk</h3>
+                            </div>
+                            <div class="result-content">
+                                <div class="probability-circle" id="tsunamiRiskCircle">
+                                    <span id="tsunamiRiskProb">0%</span>
+                                </div>
+                                <div class="risk-level" id="tsunamiRiskLevel">Low</div>
+                                <div class="prediction-text" id="tsunamiRiskText">
+                                    Low probability of tsunami
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- High Alert Prediction -->
+                        <div class="result-card" id="highAlertCard">
+                            <div class="result-header">
+                                <i class="fas fa-bell"></i>
+                                <h3>Emergency Alert</h3>
+                            </div>
+                            <div class="result-content">
+                                <div class="probability-circle" id="highAlertCircle">
+                                    <span id="highAlertProb">0%</span>
+                                </div>
+                                <div class="risk-level" id="highAlertLevel">Low</div>
+                                <div class="prediction-text" id="highAlertText">
+                                    Low probability of emergency alert
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations -->
+                    <div class="recommendations" id="recommendations">
+                        <h3><i class="fas fa-lightbulb"></i> Emergency Recommendations</h3>
+                        <div id="recommendationsList"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-spinner">
+                <i class="fas fa-brain"></i>
+                <p id="loadingText">Processing with Random Forest models...</p>
+                <div class="loading-dots">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>&copy; 2024 Random Forest Earthquake Predictor. Powered by Random Forest ML • 1,000 Real Earthquakes • 93.5% Accuracy</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</body>
+</html>
